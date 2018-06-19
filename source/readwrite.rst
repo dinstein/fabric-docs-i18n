@@ -1,11 +1,11 @@
-Read-Write set semantics
-~~~~~~~~~~~~~~~~~~~~~~~~
+Read-Write set semantics - 读写集语义
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This documents discusses the details of the current implementation about
 the semantics of read-write sets.
 
-Transaction simulation and read-write set
-'''''''''''''''''''''''''''''''''''''''''
+Transaction simulation and read-write set - 交易模拟和读写集（read-write set）
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 During simulation of a transaction at an ``endorser``, a read-write set
 is prepared for the transaction. The ``read set`` contains a list of
@@ -16,15 +16,21 @@ their new values that the transaction writes. A delete marker is set (in
 the place of new value) for the key if the update performed by the
 transaction is to delete the key.
 
+- 在背书节点上的交易模拟期间会产生一个交易的read-write set。`read set`包含在模拟期间交易读取到的唯一key及对应version。`write set`交易改写的唯一key（可能与`read set`中的key重叠）及对应的新value。如果交易的更新操作是删除一个key，则在`write set`为该key设置一个delete标记。
+
 Further, if the transaction writes a value multiple times for a key,
 only the last written value is retained. Also, if a transaction reads a
 value for a key, the value in the committed state is returned even if
 the transaction has updated the value for the key before issuing the
 read. In another words, Read-your-writes semantics are not supported.
 
+- 此外，如果交易中对一个key改写多次，则只保留最后的修改值。如果交易中读取一个key的值，即使交易在读取之前更新了该key的值，读取到的也会是之前提交过的而不是刚更新的。换句话说，不能读取到同一交易中修改的值。
+
 As noted earlier, the versions of the keys are recorded only in the read
 set; the write set just contains the list of unique keys and their
 latest values set by the transaction.
+
+- 如前所述，key的version只记录在`read set`；`write set`只包含key及对应新value。
 
 There could be various schemes for implementing versions. The minimal
 requirement for a versioning scheme is to produce non-repeating
@@ -38,6 +44,8 @@ height of the transaction within the block). This scheme has many
 advantages over the incremental number scheme - primarily, it enables
 other components such as statedb, transaction simulation and validation
 for making efficient design choices.
+
+- 对于`read set`的version的实现有很多种方案，最基本要求就是为key生成一个非重复标识符。例如用递增的序号作为version。在目前的代码实现中我们使用了blockchain height作为version方案，就是用交易的height作为该交易所修改的key的version。交易height由一个结构表示（见下面Height struc），其中TxNum表示这个tx在block中的height（译注：也就是交易在区块中的顺序）。该方案相较于递增序号有很多优点–主要是这样的version可以很好地利用到诸如statedb、交易模拟和校验这些模块中。
 
 Following is an illustration of an example read-write set prepared by
 simulation of a hypothetical transaction. For the sake of simplicity, in
