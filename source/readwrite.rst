@@ -18,7 +18,7 @@ their new values that the transaction writes. A delete marker is set (in
 the place of new value) for the key if the update performed by the
 transaction is to delete the key.
 
-在 ``背书节点`` 模拟执行交易期间，会生成该交易对应的一个读写集。``读集合(read set)`` 包含了在交易模拟执行期间，所读取的一组不重复的 key 及其版本号的列表。``写集合（write set）`` 包含了一组不重复的 key（这些 key 可能和读集合中的 key 有重合）以及该交易写入的这些 key 对应的值。如果交易对应的更新操作是删除某个 key，则该 key 对应的值会被设置删除标记。
+在 ``背书节点`` 模拟执行交易期间，会生成该交易对应的一个读写集。``读集合(read set)`` 包含了在模拟执行交易期间，所读取的一组不重复的 key 及其版本号的列表。``写集合（write set）`` 包含了一组不重复的 key（这些 key 可能和读集合中的 key 有重合）以及该交易写入的这些 key 对应的值。如果交易对应的更新操作是删除某个 key，则该 key 对应的值会被设置删除标记。
 
 Further, if the transaction writes a value multiple times for a key,
 only the last written value is retained. Also, if a transaction reads a
@@ -79,7 +79,7 @@ read-write set as ``query-info``.
 此外，如果在交易模拟执行中进行了一个批量查询，批量查询及其结果都会被添加到读写集的 ``query-info`` 中
 
 Transaction validation and updating world state using read-write set - 交易验证以及使用读写集更新世界状态
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 A ``committer`` uses the read set portion of the read-write set for
 checking the validity of a transaction and the write set portion of the
@@ -162,7 +162,7 @@ T1,..,T5 (could be contained in a single block or different blocks)
    updated to ``(k1,2,v1'), (k2,2,v2')``
 
 1. ``T1`` 通过验证，因为它没有任何的读操作。
-  随后，世界状态中 ``k1`` 和 ``k2`` 对应的元组被更新为 ``(k1,2,v1'), (k2,2,v2')``
+   随后，世界状态中 ``k1`` 和 ``k2`` 对应的元组被更新为 ``(k1,2,v1'), (k2,2,v2')``
 
 2. ``T2`` fails validation because it reads a key, ``k1``, which was
    modified by a preceding transaction - ``T1``
