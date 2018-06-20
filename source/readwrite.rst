@@ -79,7 +79,7 @@ read-write set as ``query-info``.
 此外，如果在交易模拟执行中进行了一个批量查询，批量查询及其结果都会被添加到读写集的 ``query-info`` 中
 
 Transaction validation and updating world state using read-write set - 交易验证以及使用读写集更新世界状态
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 A ``committer`` uses the read set portion of the read-write set for
 checking the validity of a transaction and the write set portion of the
