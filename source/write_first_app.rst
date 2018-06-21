@@ -579,8 +579,8 @@ The ownership of ``CAR10`` has been changed from Nick to Dave.
           control logic. For example, only certain authorized users may create
           new cars, and only the car owner may transfer the car to somebody else.
 
-Summary
--------
+Summary - 总结
+-----------------
 
 Now that we’ve done a few queries and a few updates, you should have a pretty
 good sense of how applications interact with the network. You’ve seen the basics
