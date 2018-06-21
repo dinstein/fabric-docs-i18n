@@ -120,17 +120,23 @@ this content for the first time, then you won't have this chaincode image on you
 
   docker rmi dev-peer0.org1.example.com-fabcar-1.0-5c906e402ed29f20260ae42283216aa75549c571e2e380f3615826365d8269ba
 
-Install the clients & launch the network
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Install the clients & launch the network - 安装连接客户端并启动网络
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note:: The following instructions require you to be in the ``fabcar`` subdirectory
           within your local clone of the ``fabric-samples`` repo.  Remain at the
           root of this subdirectory for the remainder of this tutorial.
 
+          下述指令需要你位于本地的 ``fabric-samples`` 仓库目录下的 ``fabcar`` 子目录下。
+          本教程随后部分也需要你始终保持在该子目录下。
+
 Run the following command to install the Fabric dependencies for the applications.
 We are concerned with ``fabric-ca-client`` which will allow our app(s) to communicate
 with the CA server and retrieve identity material, and with ``fabric-client`` which
 allows us to load the identity material and talk to the peers and ordering service.
+
+运行如下命令，安装应用所需要的 Fabric 相关依赖。
+我们通过使用 ``fabric-ca-client`` 和 CA 服务器进行交互获取身份标识文件，然后使用 ``fabric-client`` 加载这些身份标识文件，并与对等节点和排序服务进行交互。
 
 .. code:: bash
 
@@ -140,12 +146,18 @@ Launch your network using the ``startFabric.sh`` shell script.  This command
 will spin up our various Fabric entities and launch a smart contract container for
 chaincode written in Golang:
 
+使用 ``startFabric.sh`` 脚本启动你的网络。
+这个命令会启动多个 Fabric 实体，并且启动一个基于 Golang 编写的链码的智能合约容器。
+
 .. code:: bash
 
   ./startFabric.sh
 
 You also have the option of running this tutorial against chaincode written in
 `Node.js <https://fabric-shim.github.io/>`__.  If you'd like to pursue this route, issue the following command instead:
+
+你同样可以使用基于 `Node.js <https://fabric-shim.github.io/>`__ 编写的智能合约来运行本教程。
+如果你想这么做，使用如下的指令：
 
 .. code:: bash
 
@@ -156,15 +168,22 @@ You also have the option of running this tutorial against chaincode written in
           increased time is a result of the fabric-shim being installed as the
           chaincode image is being built.
 
+          注意完成 Node.js 链码场景的构建会消耗大约 90 秒甚至更长的时间。
+          脚本并没有被挂起，增加的时间是安装 fabric-shim 和编译链码镜像造成的。
+
 Alright, now that you’ve got a sample network and some code, let’s take a
 look at how the different pieces fit together.
 
-How Applications Interact with the Network
-------------------------------------------
+好的，现在你已经有了一个示例网络以及一些代码，让我们看看不同部分之间是如何相互适配的。
+
+How Applications Interact with the Network - 应用是如何和网络进行交互的
+------------------------------------------------------------------------------
 
 For a more in-depth look at the components in our ``fabcar`` network (and how
 they're deployed) as well as how applications interact with those components
 on more of a granular level, see :doc:`understand_fabcar_network`.
+
+如果想深入了解 ``fabcar`` 网络的每一个组件（包括他们是如何部署的），以及应用是如何与这些组件之间进行交互的，请参考 :doc:`understand_fabcar_network` 文档。
 
 Developers more interested in seeing what applications **do** -- as well as
 looking at the code itself to see how an application is constructed -- should
@@ -172,20 +191,30 @@ continue. For now, the most important thing to know is that applications use
 a software development kit (SDK) to access the **APIs** that permit queries and
 updates to the ledger.
 
-Enrolling the Admin User
-------------------------
+希望了解应用是如何构建以及运行的开发者，请继续阅读本文档。
+到目前为止最需要明确的事情是，应用使用了一个软件开发套件（SDK）来访问 **APIs**，实现对账本的查询和更新。
+
+Enrolling the Admin User - 登记管理员用户
+---------------------------------------------
 
 .. note:: The following two sections involve communication with the Certificate
           Authority.  You may find it useful to stream the CA logs when running
           the upcoming programs.
 
+          随后的两个小节包含了与认证授权管理（CA）的交互。
+          你会发现在随后的程序中，查看 CA 的日志是非常有帮助。
+
 To stream your CA logs, split your terminal or open a new shell and issue the following:
+
+为了查看你的 CA 日志，将终端分屏或者打开一个新的终端并输入如下命令：
 
 .. code:: bash
 
   docker logs -f ca.example.com
 
 Now hop back to your terminal with the ``fabcar`` content...
+
+现在，回到你的包含 ``fabcar`` 内容的终端...
 
 When we launched our network, an admin user - ``admin`` - was registered with our
 Certificate Authority.  Now we need to send an enroll call to the CA server and
@@ -194,6 +223,12 @@ details here, but suffice it to say that the SDK and by extension our applicatio
 need this cert in order to form a user object for the admin.  We will then use this admin
 object to subsequently register and enroll a new user.  Send the admin enroll call to the CA
 server:
+
+当我们启动我们的网络是，一个管理员用户 - ``admin`` - 被注册到我们的认证授权管理中。
+现在我们需要发送一个登记请求到 CA 服务器，并且获取该用户登记证书（eCert）。
+这里我们并不会深入讨论登记的细节，但是注意 SDK 以及基于我们应用的扩展都需要这个证书来构建一个管理员用户。
+随后，我们会使用这个管理员来注册和登记新的用户。
+发送管理员登记请求到 CA 服务器：
 
 .. code:: bash
 
@@ -204,8 +239,11 @@ an eCert and key material into a newly created folder - ``hfc-key-store`` - at t
 root of this project.  Our apps will then look to this location when they need to
 create or load the identity objects for our various users.
 
-Register and Enroll ``user1``
------------------------------
+这个程序会执行一个证书签名请求（CSR），最后输出 eCert 和密钥文件到一个新创建的目录下 - ``hfc-key-store`` - 该目录位于项目的根目录下。
+随后，我们的应用在需要创建或者加载用户的身份标识对象时，会查看这个目录。
+
+Register and Enroll ``user1`` - 注册和登记 ``user1``
+--------------------------------------------------------
 
 With our newly generated admin eCert, we will now communicate with the CA server
 once more to register and enroll a new user.  This user - ``user1`` - will be
@@ -214,6 +252,11 @@ note here that it is the ``admin`` identity that is issuing the registration and
 enrollment calls for our new user (i.e. this user is acting in the role of a registrar).
 Send the register and enroll calls for ``user1``:
 
+使用我们新生成的管理员 eCert，我们可以再次和 CA 服务器进交互，注册和登记一个新用户。
+这个用户 - ``user1`` - 会被我们用于查询和更新账本。
+值得注意的是，只有 ``admin`` 身份可以执行对新用户的注册和登记请求（该用户扮演了一个登记员的角色）。
+发送 ``user1`` 的注册和登记请求：
+
 .. code:: bash
 
   node registerUser.js
@@ -221,6 +264,10 @@ Send the register and enroll calls for ``user1``:
 Similar to the admin enrollment, this program invokes a CSR and outputs the keys
 and eCert into the ``hfc-key-store`` subdirectory.  So now we have identity material for two
 separate users - ``admin`` & ``user1``.  Time to interact with the ledger...
+
+和登记管理员时类似，该程序执行了一个 CSR，输出密钥和 eCert 文件到 ``hfc-key-store`` 子目录下。
+现在我们有了两个用户的身份标识文件 - ``admin`` 和 ``user1``。
+现在到了和账本进行交互的时间了...
 
 Querying the Ledger
 -------------------
